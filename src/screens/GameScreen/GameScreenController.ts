@@ -1,8 +1,8 @@
-import { ScreenController } from "../../types.ts";
+import { GAME_DURATION } from "../../constants.ts";
 import type { ScreenSwitcher } from "../../types.ts";
+import { ScreenController } from "../../types.ts";
 import { GameScreenModel } from "./GameScreenModel.ts";
 import { GameScreenView } from "./GameScreenView.ts";
-import { GAME_DURATION } from "../../constants.ts";
 
 /**
  * GameScreenController - Coordinates game logic between Model and View
@@ -12,6 +12,7 @@ export class GameScreenController extends ScreenController {
 	private view: GameScreenView;
 	private screenSwitcher: ScreenSwitcher;
 	private gameTimer: number | null = null;
+	private timeRemaining: number = GAME_DURATION;
 
 	private squeezeSound: HTMLAudioElement;
 
@@ -46,6 +47,15 @@ export class GameScreenController extends ScreenController {
 	 */
 	private startTimer(): void {
 		// TODO: Task 3 - Implement countdown timer using setInterval
+		this.gameTimer = setInterval(() => {
+			this.timeRemaining--;
+			this.view.updateTimer(this.timeRemaining);
+			if(this.timeRemaining <= 0) {
+				this.endGame();
+			}
+		}, 1000);
+
+		this.timeRemaining = GAME_DURATION;
 	}
 
 	/**
@@ -53,6 +63,10 @@ export class GameScreenController extends ScreenController {
 	 */
 	private stopTimer(): void {
 		// TODO: Task 3 - Stop the timer using clearInterval
+		if(this.gameTimer !== null) {
+			clearInterval(this.gameTimer);
+			this.gameTimer = null;
+		}
 	}
 
 	/**
